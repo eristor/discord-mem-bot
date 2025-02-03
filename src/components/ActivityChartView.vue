@@ -12,7 +12,10 @@
         <span>Кінцева дата:</span>
         <input type="date" v-model="endDate" />
       </label>
-      <button class="btn btn-success" @click="filterStats">Застосувати фільтр</button>
+      <div class="d-flex gap-2 align-items-center">
+        <button class="btn btn-success" @click="filterStats">Застосувати фільтр</button>
+        <button class="btn btn-danger" @click="filterClear">Очистити фільтр</button>
+      </div>
     </div>
 
     <!-- Графік -->
@@ -24,6 +27,7 @@
 
 <script>
 import { Chart } from 'chart.js/auto';
+import { toast } from 'vue3-toastify';
 
 export default {
   data() {
@@ -44,9 +48,16 @@ export default {
       const response = await fetch('https://discord-bot-server-zblp.onrender.com/api/user-stats');
       this.stats = await response.json();
     },
+    filterClear() {
+      this.startDate = '';
+      this.endDate = '';
+    },
     filterStats() {
       if (!this.startDate || !this.endDate) {
-        alert('Будь ласка, оберіть обидві дати.');
+        toast.warning('Будь ласка, оберіть обидві дати.', {
+        theme: 'colored',
+        position: 'top-right'
+      });
         return;
       }
 

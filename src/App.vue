@@ -2,12 +2,13 @@
   <div>
     <!-- Меню навігації -->
     <nav class="animated-menu">
-      <ul>
-        <li><a href="#" @click.prevent="goTo('roulette')">🎲 Рулетка</a></li>
-        <li><a href="#" @click.prevent="goTo('members')">👥 Список учасників</a></li>
-        <li><a href="#" @click.prevent="goTo('chart')">📊 Статистика</a></li>
-        <li><a href="#" @click.prevent="goTo('freaks')">🏆 Топ фріків</a></li>
-        <li><a href="#" @click.prevent="goTo('about')">ℹ️ Про нас</a></li>
+      <ul class="d-flex flex-wrap justify-content-center">
+        <li><a href="#" class="text-nowrap" @click.prevent="goTo('roulette')">🎲 Рулетка</a></li>
+        <li><a href="#" class="text-nowrap" @click.prevent="goTo('members')">👥 Список учасників</a></li>
+        <li><a href="#" class="text-nowrap" @click.prevent="goTo('chart')">📊 Статистика</a></li>
+        <li><a href="#" class="text-nowrap" @click.prevent="goTo('freaks')">🏆 Топ фріків</a></li>
+        <li><a href="#" class="text-nowrap" @click.prevent="goTo('reactions')">👍 Рейтинг реакцій</a></li>
+        <li><a href="#" class="text-nowrap" @click.prevent="goTo('about')">ℹ️ Про нас</a></li>
       </ul>
     </nav>
 
@@ -17,6 +18,7 @@
       <MemberListView v-if="currentView === 'members'" />
       <ActivityChartView v-if="currentView === 'chart'" />
       <TopFreaksView v-if="currentView === 'freaks'" />
+      <ReactionsStatsView v-if="currentView === 'reactions'" />
       <div v-if="currentView === 'about'" class="about-page">
         <h1>Про наш проєкт</h1>
         <p>Це фантастична рулетка для обрання фріка дня!</p>
@@ -30,13 +32,15 @@ import MemberListView from './components/MemberListView.vue';
 import RouletteView from './components/RouletteView.vue';
 import ActivityChartView from './components/ActivityChartView.vue';
 import TopFreaksView from './components/TopFreaksView.vue';
+import ReactionsStatsView from './components/ReactionsStatsView.vue';
 
 export default {
   components: {
     MemberListView,
     RouletteView,
     ActivityChartView,
-    TopFreaksView
+    TopFreaksView,
+    ReactionsStatsView
   },
   data() {
     return {
@@ -100,7 +104,7 @@ body {
 }
 
 .animated-menu a {
-  color: #ffc107;
+  color: #C19A6B;
   text-decoration: none;
   font-size: 18px;
   position: relative;
@@ -135,6 +139,7 @@ main {
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  background-color: #C19A6B;
 }
 
 .about-page {
