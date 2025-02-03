@@ -13,7 +13,7 @@
         <tr v-for="(reaction, index) in sortedReactions" :key="reaction.name">
           <td>{{ index + 1 }}</td>
           <td class="reaction-cell">
-            <img v-if="reaction.imageUrl" :src="reaction.imageUrl" alt="Reaction" class="reaction-image" />
+            <img v-if="reaction.imageUrl?.length > 2" :src="reaction.imageUrl" alt="Reaction" class="reaction-image" />
             {{ reaction.name }}
           </td>
           <td>{{ reaction.count }}</td>
@@ -32,8 +32,7 @@ export default {
   },
   computed: {
     sortedReactions() {
-      return Object.entries(this.reactions)
-        .map(([emoji, count]) => ({ emoji, count }))
+      return Object.values(this.reactions)
         .sort((a, b) => b.count - a.count);
     }
   },
@@ -41,6 +40,7 @@ export default {
     // Завантаження статистики з сервера
     const response = await fetch('https://discord-bot-server-zblp.onrender.com/api/reactions-stats');
     this.reactions = await response.json();
+    console.log(this.reactions);
   }
 };
 </script>
