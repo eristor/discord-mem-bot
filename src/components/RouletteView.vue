@@ -97,8 +97,8 @@ export default {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            userId: winner.id,
-            username: winner.username
+            userId: this.winner.id,
+            username: this.winner.username
           })
         });
       } catch (error) {
