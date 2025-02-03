@@ -4,9 +4,9 @@
     <table class="table table-dark table-striped">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Ім'я користувача</th>
-          <th>Кількість перемог</th>
+          <th class="text-nowrap">#</th>
+          <th  class="text-nowrap">Ім'я користувача</th>
+          <th  class="text-nowrap">Кількість фріковства</th>
         </tr>
       </thead>
       <tbody>
@@ -44,7 +44,7 @@ export default {
 <style scoped>
 h2 {
   margin-bottom: 20px;
-  color: #ffc107;
+  color: white;
 }
 
 table {

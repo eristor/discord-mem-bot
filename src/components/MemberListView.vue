@@ -38,6 +38,7 @@ export default {
 .container {
   padding: 20px;
   font-family: Arial, sans-serif;
+  margin-top: 40px;
 }
 .title {
   font-size: 24px;
@@ -68,6 +69,6 @@ export default {
   font-weight: bold;
 }
 .member-role {
-  color: gray;
+  color: #333333;
 }
 </style>

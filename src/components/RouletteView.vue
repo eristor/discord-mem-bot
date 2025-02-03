@@ -39,7 +39,7 @@ export default {
   },
   async created() {
     try {
-      const response = await fetch('app.seldow.pp.ua/api/members');
+      const response = await fetch('https://discord-bot-server-zblp.onrender.com/api/members');
       this.members = await response.json();
     } catch (error) {
       console.error('Помилка отримання учасників:', error);
