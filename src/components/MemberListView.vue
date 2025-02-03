@@ -25,7 +25,7 @@ export default {
   async created() {
     try {
       // Виконуємо запит до бекенду
-      const response = await fetch('https://discord-mem-bot.vercel.app/api/members');
+      const response = await fetch('https://discord-bot-server-zblp.onrender.com/api/members');
       this.members = await response.json();
     } catch (error) {
       console.error('Error fetching members:', error);
