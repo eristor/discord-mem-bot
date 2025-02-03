@@ -76,7 +76,7 @@ export default {
       this.isSpinning = false;
 
       try {
-        await fetch('app.seldow.pp.ua/api/roulette', {
+        await fetch('https://discord-bot-server-zblp.onrender.com/api/roulette', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -90,9 +90,21 @@ export default {
         });
 
         console.log('Повідомлення успішно відправлено.');
+
+        await fetch('https://discord-bot-server-zblp.onrender.com/api/add-winner', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: winner.id,
+            username: winner.username
+          })
+        });
       } catch (error) {
         console.error('Помилка відправлення повідомлення:', error);
       }
+      console.log('Переможця успішно додано.');
     }
   }
 };

@@ -6,6 +6,7 @@
         <li><a href="#" @click.prevent="goTo('roulette')">🎲 Рулетка</a></li>
         <li><a href="#" @click.prevent="goTo('members')">👥 Список учасників</a></li>
         <li><a href="#" @click.prevent="goTo('chart')">📊 Статистика</a></li>
+        <li><a href="#" @click.prevent="goTo('freaks')">🏆 Топ фріків</a></li>
         <li><a href="#" @click.prevent="goTo('about')">ℹ️ Про нас</a></li>
       </ul>
     </nav>
@@ -15,6 +16,7 @@
       <RouletteView v-if="currentView === 'roulette'" />
       <MemberListView v-if="currentView === 'members'" />
       <ActivityChartView v-if="currentView === 'chart'" />
+      <TopFreaksView v-if="currentView === 'freaks'" />
       <div v-if="currentView === 'about'" class="about-page">
         <h1>Про наш проєкт</h1>
         <p>Це фантастична рулетка для обрання фріка дня!</p>
@@ -27,12 +29,14 @@
 import MemberListView from './components/MemberListView.vue';
 import RouletteView from './components/RouletteView.vue';
 import ActivityChartView from './components/ActivityChartView.vue';
+import TopFreaksView from './components/TopFreaksView.vue';
 
 export default {
   components: {
     MemberListView,
     RouletteView,
-    ActivityChartView
+    ActivityChartView,
+    TopFreaksView
   },
   data() {
     return {
