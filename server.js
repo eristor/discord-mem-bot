@@ -30,7 +30,7 @@ if (fs.existsSync(STATS_FILE)) {
   userStats = JSON.parse(fs.readFileSync(STATS_FILE, 'utf8'));
 }
 
-client.login('process.env.DISCORD_TOKEN');
+client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
