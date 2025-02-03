@@ -39,7 +39,7 @@ export default {
   },
   async created() {
     try {
-      const response = await fetch('https://discord-mem-bot.vercel.app/api/members');
+      const response = await fetch('https://discord-bot-server-zblp.onrender.com/api/members');
       this.members = await response.json();
     } catch (error) {
       console.error('Помилка отримання учасників:', error);
@@ -76,7 +76,7 @@ export default {
       this.isSpinning = false;
 
       try {
-        await fetch('https://discord-mem-bot.vercel.app/api/roulette', {
+        await fetch('https://discord-bot-server-zblp.onrender.com/api/roulette', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
