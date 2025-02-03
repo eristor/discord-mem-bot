@@ -39,7 +39,7 @@ export default {
   },
   async created() {
     try {
-      const response = await fetch('app.seldow.pp.ua/api/members');
+      const response = await fetch('https://discord-mem-bot.vercel.app/api/members');
       this.members = await response.json();
     } catch (error) {
       console.error('Помилка отримання учасників:', error);
@@ -76,7 +76,7 @@ export default {
       this.isSpinning = false;
 
       try {
-        await fetch('app.seldow.pp.ua/api/roulette', {
+        await fetch('https://discord-mem-bot.vercel.app/api/roulette', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
