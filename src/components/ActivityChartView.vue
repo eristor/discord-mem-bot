@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     async fetchStats() {
-      const response = await fetch('https://discord-mem-bot.vercel.app/api/user-stats');
+      const response = await fetch('https://discord-bot-server-zblp.onrender.com/api/user-stats');
       this.stats = await response.json();
     },
     filterStats() {
