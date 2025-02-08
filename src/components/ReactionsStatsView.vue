@@ -11,12 +11,14 @@
       </thead>
       <tbody>
         <tr v-for="(reaction, index) in sortedReactions" :key="reaction.name">
-          <td>{{ index + 1 }}</td>
-          <td class="reaction-cell">
-            <img v-if="reaction.image_url?.length > 2" :src="reaction.image_url" alt="Reaction" class="reaction-image" />
+          <td class="fs-5">{{ index + 1 }}</td>
+          <td v-if="reaction.image_url?.length > 2" class="reaction-cell">
+            <img  :src="reaction.image_url" alt="Reaction" class="reaction-image" />
+          </td>
+          <td v-else class="reaction-cell without_img">
             {{ reaction.name }}
           </td>
-          <td>{{ reaction.count }}</td>
+          <td class="text-center fs-4">{{ reaction.count }}</td>
         </tr>
       </tbody>
     </table>
@@ -46,27 +48,30 @@ export default {
 </script>
 
 <style scoped>
-h2 {
-  margin-bottom: 20px;
-  color: #ffc107;
-}
+  h2 {
+    margin-bottom: 20px;
+    color: #ffc107;
+  }
 
-table {
-  width: 80%;
-  margin: 0 auto;
-  background-color: #212529;
-  color: #fff;
-  border-radius: 8px;
-}
-.reaction-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+  table {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #212529;
+    color: #fff;
+    border-radius: 8px;
+  }
+  .reaction-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-.reaction-image {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
-}
+  .reaction-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+  }
+  .without_img {
+    font-size: 50px;
+  }
 </style>

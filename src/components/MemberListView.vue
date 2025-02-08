@@ -1,12 +1,16 @@
 <template>
   <div class="container">
     <h1 class="title">Список учасників сервера</h1>
-    <ul v-if="members.length" class="members-list">
-      <li v-for="member in members" :key="member.id" class="member-item">
+    <ul v-if="members.length" class="members-list row">
+      <li v-for="member in members" :key="member.id" class="member-item col-md-4 col-12">
         <img :src="member.avatar" alt="Avatar" class="avatar" />
         <div class="member-info">
           <p class="member-name">{{ member.username }}</p>
-          <p class="member-role">Роль: {{ member.role }}</p>
+          <p class="member-role">Ролі: 
+            <span v-for="(role, index) in member.roles" :key="index">
+              {{ role }}<span v-if="index < member.roles.length - 1">, </span>
+            </span>
+          </p>
         </div>
       </li>
     </ul>
