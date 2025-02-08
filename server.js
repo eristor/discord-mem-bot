@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { Client, GatewayIntentBits } from 'discord.js';
+import { Client, GatewayIntentBits, Events, PermissionsBitField } from 'discord.js';
 
 dotenv.config();
 
@@ -20,18 +20,160 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMessageReactions
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildVoiceStates,
   ]
 });
 
 const GUILD_ID = process.env.GUILD_ID;
 const CHANNEL_ID = process.env.CHANNEL_ID;
 const PORT = process.env.PORT || 3000;
+const PREFIX_CHANNEL_ID = process.env.PREFIX_CHANNEL_ID;
 
 client.login(process.env.DISCORD_TOKEN);
 
 client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
+});
+
+client.on(Events.VoiceStateUpdate, async (oldState, newState) => {
+  const guild = newState.guild;
+
+  // Користувач увійшов у спеціальний канал для створення голосового каналу
+  if (newState.channelId === PREFIX_CHANNEL_ID) {
+    // Створюємо новий голосовий канал
+    const newVoiceChannel = await guild.channels.create({
+      name: `${newState.member.user.username}'s Channel`,
+      type: ChannelType.GuildVoice,
+      parent: newState.channel.parentId,
+      permissionOverwrites: [
+        {
+          id: newState.member.id,
+          allow: [
+            PermissionsBitField.Flags.Connect,
+            PermissionsBitField.Flags.ManageChannels,
+            PermissionsBitField.Flags.MuteMembers,
+            PermissionsBitField.Flags.DeafenMembers
+          ]
+        },
+        {
+          id: guild.roles.everyone.id,
+          allow: [PermissionsBitField.Flags.Connect]
+        }
+      ]
+    });
+
+    // Створюємо текстовий канал у тій самій категорії
+    const newTextChannel = await guild.channels.create({
+      name: `${newState.member.user.username}-commands`,
+      type: ChannelType.GuildText,
+      parent: newVoiceChannel.parentId,
+      permissionOverwrites: [
+        {
+          id: newState.member.id,
+          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
+        },
+        {
+          id: guild.roles.everyone.id,
+          deny: [PermissionsBitField.Flags.ViewChannel]
+        }
+      ]
+    });
+
+    // Переміщуємо користувача до нового голосового каналу
+    await newState.member.voice.setChannel(newVoiceChannel);
+
+    // Надсилаємо повідомлення з командами в текстовий канал
+    await newTextChannel.send(`Привіт, ${newState.member.user.username}! Ваш канал створено. Ось команди, які ви можете використовувати:
+
+**/rename <нова назва>** - змінити назву каналу
+**/limit <кількість>** - встановити ліміт користувачів
+**/lock** - закрити доступ до каналу
+**/unlock** - відкрити доступ до каналу
+
+Використовуйте ці команди, щоб налаштувати ваш голосовий канал.`);
+
+    console.log(`Created voice and text channels for ${newState.member.user.tag}`);
+
+    // Відстежуємо вихід користувача з голосового каналу
+    const interval = setInterval(async () => {
+      const updatedChannel = await guild.channels.fetch(newVoiceChannel.id);
+      if (updatedChannel.members.size === 0) {
+        clearInterval(interval);
+        await newVoiceChannel.delete();
+        await newTextChannel.delete();
+        console.log(`Deleted channels for ${newState.member.user.tag}`);
+      }
+    }, 5000);
+  }
+});
+
+client.on('messageCreate', async (message) => {
+  if (message.content.startsWith('/rename')) {
+    const newName = message.content.split(' ').slice(1).join(' ');
+    const voiceChannel = message.member.voice.channel;
+
+    if (!voiceChannel) {
+      return message.reply('Ви повинні бути в голосовому каналі, щоб перейменувати його.');
+    }
+
+    if (voiceChannel.permissionsFor(message.member).has(PermissionsBitField.Flags.ManageChannels)) {
+      await voiceChannel.setName(newName);
+      message.reply(`Канал перейменовано на: ${newName}`);
+    } else {
+      message.reply('У вас немає прав на керування цим каналом.');
+    }
+  }
+
+  if (message.content.startsWith('/limit')) {
+    const limit = parseInt(message.content.split(' ')[1], 10);
+    const voiceChannel = message.member.voice.channel;
+
+    if (!voiceChannel) {
+      return message.reply('Ви повинні бути в голосовому каналі, щоб встановити ліміт.');
+    }
+
+    if (voiceChannel.permissionsFor(message.member).has(PermissionsBitField.Flags.ManageChannels)) {
+      await voiceChannel.setUserLimit(limit);
+      message.reply(`Ліміт користувачів у каналі встановлено на: ${limit}`);
+    } else {
+      message.reply('У вас немає прав на керування цим каналом.');
+    }
+  }
+
+  if (message.content.startsWith('/lock')) {
+    const voiceChannel = message.member.voice.channel;
+
+    if (!voiceChannel) {
+      return message.reply('Ви повинні бути в голосовому каналі, щоб заблокувати його.');
+    }
+
+    if (voiceChannel.permissionsFor(message.member).has(PermissionsBitField.Flags.ManageChannels)) {
+      await voiceChannel.permissionOverwrites.edit(message.guild.roles.everyone, {
+        Connect: false
+      });
+      message.reply('Канал заблоковано.');
+    } else {
+      message.reply('У вас немає прав на керування цим каналом.');
+    }
+  }
+
+  if (message.content.startsWith('/unlock')) {
+    const voiceChannel = message.member.voice.channel;
+
+    if (!voiceChannel) {
+      return message.reply('Ви повинні бути в голосовому каналі, щоб розблокувати його.');
+    }
+
+    if (voiceChannel.permissionsFor(message.member).has(PermissionsBitField.Flags.ManageChannels)) {
+      await voiceChannel.permissionOverwrites.edit(message.guild.roles.everyone, {
+        Connect: true
+      });
+      message.reply('Канал розблоковано.');
+    } else {
+      message.reply('У вас немає прав на керування цим каналом.');
+    }
+  }
 });
 
 // Function to send a message to the Discord channel
@@ -141,7 +283,7 @@ app.get('/api/members', async (req, res) => {
       id: member.id,
       username: member.user.username,
       avatar: member.user.displayAvatarURL(),
-      role: member.roles.highest.name
+      roles: member.roles.cache.map(role => role.name)
     }));
 
     res.status(200).json(membersData);
@@ -152,14 +294,32 @@ app.get('/api/members', async (req, res) => {
 });
 
 // Handle message create with keyword check
-client.on('messageCreate', (message) => {
+client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
   if (message.content.toLowerCase().includes('фрік') ||
       message.content.toLowerCase().includes('fr1kadelka') ||
       message.content.toLowerCase().includes('даун')) {
-    message.react('🤡');
-    message.reply('Може таки тегним головного по фріковсту fr1kadelka🤡🤡🤡🤡?');
+    try {
+      // Отримуємо останнього переможця фріка дня з бази даних
+      const { data: lastWinner, error } = await supabase
+        .from('freak_winners')
+        .select('username')
+        .order('win_count', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error || !lastWinner) {
+        console.error('Error fetching last winner:', error);
+        message.reply('Не вдалося отримати останнього фріка дня.');
+      } else {
+        message.react('🤡');
+        message.reply(`Може таки тегним головного по фріковству ${lastWinner.username} 🤡🤡🤡🤡?`);
+      }
+    } catch (err) {
+      console.error('Error handling messageCreate event:', err);
+      message.reply('Сталася помилка під час обробки вашого запиту.');
+    }
   }
 });
 
