@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.7",
     "cors": "^2.8.5",
