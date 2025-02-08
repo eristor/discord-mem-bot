@@ -13,7 +13,7 @@
         <tr v-for="(reaction, index) in sortedReactions" :key="reaction.name">
           <td>{{ index + 1 }}</td>
           <td class="reaction-cell">
-            <img v-if="reaction.imageUrl?.length > 2" :src="reaction.imageUrl" alt="Reaction" class="reaction-image" />
+            <img v-if="reaction.image_url?.length > 2" :src="reaction.image_url" alt="Reaction" class="reaction-image" />
             {{ reaction.name }}
           </td>
           <td>{{ reaction.count }}</td>

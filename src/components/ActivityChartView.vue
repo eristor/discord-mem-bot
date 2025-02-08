@@ -35,7 +35,7 @@ export default {
       chart: null,
       startDate: '',
       endDate: '',
-      stats: {}
+      stats: []
     };
   },
   async mounted() {
@@ -55,32 +55,13 @@ export default {
     filterStats() {
       if (!this.startDate || !this.endDate) {
         toast.warning('Будь ласка, оберіть обидві дати.', {
-        theme: 'colored',
-        position: 'top-right'
-      });
+          theme: 'colored',
+          position: 'top-right'
+        });
         return;
       }
 
-      const filteredData = {};
-      for (const userId in this.stats) {
-        const user = this.stats[userId];
-        const filteredMessages = {};
-
-        // Фільтруємо повідомлення за обраними датами
-        for (const date in user.messages) {
-          if (date >= this.startDate && date <= this.endDate) {
-            filteredMessages[date] = user.messages[date];
-          }
-        }
-
-        if (Object.keys(filteredMessages).length > 0) {
-          filteredData[userId] = {
-            username: user.username,
-            messages: filteredMessages
-          };
-        }
-      }
-
+      const filteredData = this.stats.filter(entry => entry.date >= this.startDate && entry.date <= this.endDate);
       this.renderChart(filteredData);
     },
     renderChart(filteredStats = this.stats) {
@@ -88,15 +69,18 @@ export default {
         this.chart.destroy();
       }
 
-      const labels = [];
-      const data = [];
+      const userMessageCounts = {};
 
-      for (const userId in filteredStats) {
-        labels.push(filteredStats[userId].username);
+      // Агрегуємо кількість повідомлень за користувачами
+      filteredStats.forEach(entry => {
+        if (!userMessageCounts[entry.username]) {
+          userMessageCounts[entry.username] = 0;
+        }
+        userMessageCounts[entry.username] += entry.message_count;
+      });
 
-        const messageCounts = Object.values(filteredStats[userId].messages);
-        data.push(messageCounts.reduce((sum, count) => sum + count, 0));
-      }
+      const labels = Object.keys(userMessageCounts);
+      const data = Object.values(userMessageCounts);
 
       // Створюємо графік
       this.chart = new Chart(document.getElementById('userStatsChart'), {

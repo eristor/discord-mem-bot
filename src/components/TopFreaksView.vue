@@ -13,7 +13,7 @@
         <tr v-for="(winner, index) in sortedWinners" :key="winner.username">
           <td>{{ index + 1 }}</td>
           <td>{{ winner.username }}</td>
-          <td>{{ winner.count }}</td>
+          <td>{{ winner.win_count }}</td>
         </tr>
       </tbody>
     </table>
